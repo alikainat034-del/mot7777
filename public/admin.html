@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>MOT777 Admin</title>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--n:#0f2340;--n2:#1a3a5c;--g:#00C853;--gold:#FFD700;--r:#E53935;--b:#1565C0;--bg:#f0f2f5;--bd:#e0e0e0;--gr:#6c757d}
+html,body{font-family:'Segoe UI',system-ui,sans-serif;background:'var(--bg)';min-height:100vh}
+.lp{min-height:100vh;background:linear-gradient(135deg,#0f2340,#1a3a5c);display:flex;align-items:center;justify-content:center;padding:20px}
+.lc{background:#fff;border-radius:16px;padding:36px 28px;width:100%;max-width:380px;box-shadow:0 20px 60px rgba(0,0,0,.4)}
+.ll{font-size:34px;font-weight:900;letter-spacing:4px;color:'var(--gold)';font-family:monospace;text-align:center;display:block;margin-bottom:4px}
+.ls{text-align:center;color:'var(--gr)';font-size:10px;letter-spacing:3px;margin-bottom:22px}
+.err{background:#ffebee;border:1px solid #ef9a9a;border-radius:8px;padding:10px 14px;color:'var(--r)';font-size:13px;margin-bottom:12px}
+.lbl{font-size:10px;font-weight:800;color:'var(--gr)';letter-spacing:1.5px;display:block;margin-bottom:5px}
+.inp{width:100%;border:2px solid var(--bd);border-radius:8px;padding:11px 14px;font-size:14px;outline:none;font-family:inherit;margin-bottom:12px}
+.inp:focus{border-color:'var(--b)'}
+.lbtn{width:100%;padding:13px;border:none;border-radius:8px;background:'var(--n2)';color:#fff;font-size:14px;font-weight:800;cursor:pointer}
+.hint{text-align:center;font-size:11px;color:#aaa;margin-top:10px}
+/* LAYOUT */
+.layout{display:grid;grid-template-columns:220px 1fr;min-height:100vh}
+.sb{background:#0d2137;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
+.sbt{padding:16px;border-bottom:1px solid rgba(255,255,255,.08)}
+.sblogo{font-size:18px;font-weight:900;letter-spacing:3px;color:'var(--gold)';font-family:monospace}
+.sbu{padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.06)}
+.sbun{font-size:13px;font-weight:700;color:#fff}
+.sbur{font-size:9px;color:rgba(255,255,255,.4);margin-top:2px}
+.sbub{display:inline-block;padding:2px 8px;border-radius:10px;font-size:9px;font-weight:800;margin-top:4px}
+.bs{background:rgba(255,215,0,.15);color:'var(--gold)';border:1px solid rgba(255,215,0,.3)}
+.ba{background:rgba(30,144,255,.15);color:#4db8ff;border:1px solid rgba(30,144,255,.3)}
+.sbn{flex:1;padding:8px 0}
+.nsc{padding:6px 16px 3px;font-size:9px;font-weight:800;color:rgba(255,255,255,.22);letter-spacing:2px}
+.ni{display:flex;align-items:center;gap:9px;padding:9px 12px;cursor:pointer;border-left:2px solid transparent;margin:1px 8px;border-radius:6px;font-size:12px;font-weight:600;color:rgba(255,255,255,.5);transition:all .15s}
+.ni:hover{background:rgba(255,255,255,.06);color:rgba(255,255,255,.85)}
+.ni.on{background:rgba(255,255,255,.08);color:#fff;border-left-color:'var(--g)'}
+.nbadge{margin-left:auto;background:'var(--g)';color:#fff;border-radius:10px;padding:1px 7px;font-size:10px;font-weight:800}
+.sbf{padding:12px;border-top:1px solid rgba(255,255,255,.06)}
+.lout{width:100%;padding:9px;border:1px solid rgba(255,59,92,.3);background:rgba(255,59,92,.08);color:rgba(255,150,150,.8);border-radius:6px;cursor:pointer;font-size:12px;font-weight:700}
+/* MAIN */
+.main{overflow-y:auto;background:'var(--bg)'}
+.ph{background:#fff;border-bottom:1px solid var(--bd);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
+.pt{font-size:18px;font-weight:800;color:'var(--n2)'}
+.pb{padding:18px 20px}
+/* STAT */
+.sg{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;margin-bottom:18px}
+.sc{background:#fff;border-radius:10px;padding:14px;border:1px solid var(--bd)}
+.scv{font-size:20px;font-weight:800;color:'var(--n2)'}
+.scl{font-size:10px;color:'var(--gr)';font-weight:700;letter-spacing:.5px;margin-top:2px}
+/* PANEL */
+.pn{background:#fff;border-radius:10px;border:1px solid var(--bd);margin-bottom:16px;overflow:hidden}
+.pnh{padding:12px 16px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between}
+.pnt{font-size:13px;font-weight:800;color:'var(--n2)'}
+.pnb{padding:14px}
+/* FORM */
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.fi{border:1px solid var(--bd);border-radius:7px;padding:9px 11px;font-size:13px;outline:none;font-family:inherit;width:100%}
+.fi:focus{border-color:'var(--b)'}
+.fs{border:1px solid var(--bd);border-radius:7px;padding:9px 11px;font-size:13px;outline:none;background:#fff;cursor:pointer;width:100%}
+.fl{font-size:10px;font-weight:800;color:'var(--gr)';letter-spacing:1px;display:block;margin-bottom:4px}
+/* BTN */
+.btn{padding:9px 18px;border:none;border-radius:7px;cursor:pointer;font-size:12px;font-weight:800;transition:all .2s;display:inline-flex;align-items:center;gap:6px;font-family:inherit}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.bg{background:'var(--g)';color:#fff}
+.br{background:'var(--r)';color:#fff}
+.bb{background:'var(--b)';color:#fff}
+.by{background:linear-gradient(135deg,#c9a84c,#ffd700);color:#000}
+.bh{background:'var(--bg)';border:1px solid var(--bd);color:'var(--gr)'}
+.sm{padding:5px 10px;font-size:11px}
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse;font-size:12px}
+.tbl th{background:#f8f9fa;color:'var(--gr)';padding:8px 10px;text-align:left;font-size:10px;letter-spacing:1px;font-weight:800;border-bottom:2px solid var(--bd)}
+.tbl td{padding:9px 10px;border-bottom:1px solid #f5f5f5;color:#333;vertical-align:middle}
+.tbl tr:hover td{background:#fafbfc}
+/* PILLS */
+.pill{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:800}
+.pg{background:#e8f5e9;color:#1b5e20;border:1px solid #a5d6a7}
+.pr{background:#ffebee;color:#b71c1c;border:1px solid #ef9a9a}
+.pb2{background:#e3f2fd;color:#0d47a1;border:1px solid #90caf9}
+.py{background:rgba(255,215,0,.15);color:#8a6400;border:1px solid rgba(255,215,0,.4)}
+/* TOAST */
+.tw{position:fixed;top:14px;right:14px;z-index:9999;display:flex;flex-direction:column;gap:7px;pointer-events:none}
+.toast{border-radius:9px;padding:11px 15px;font-size:13px;font-weight:600;animation:tin .3s ease;box-shadow:0 4px 14px rgba(0,0,0,.2)}
+@keyframes tin{from{transform:translateX(110%);opacity:0}to{transform:translateX(0);opacity:1}}
+.ts{background:#e8f5e9;border:1px solid #a5d6a7;color:#1b5e20}
+.te{background:#ffebee;border:1px solid #ef9a9a;color:#b71c1c}
+.ti{background:#e3f2fd;border:1px solid #90caf9;color:#0d47a1}
+.tw2{background:#fff8e1;border:1px solid #ffe082;color:#e65100}
+/* MODAL */
+.mo{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;display:flex;align-items:center;justify-content:center;padding:16px}
+.md{background:#fff;border-radius:12px;width:100%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,.3);animation:mIn .22s ease}
+@keyframes mIn{from{transform:scale(.92);opacity:0}to{transform:scale(1);opacity:1}}
+.mh{padding:14px 18px;border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center}
+.mt{font-size:15px;font-weight:800;color:'var(--n2)'}
+.mx{background:'var(--bg)';border:none;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:16px}
+.mb{padding:16px 18px}
+.mf{padding:12px 18px;border-top:1px solid var(--bd);display:flex;justify-content:flex-end;gap:8px}
+/* SUCCESS */
+.sb2{background:#e8f5e9;border:1px solid #a5d6a7;border-radius:10px;padding:14px 16px;margin-bottom:14px;display:flex;gap:12px;align-items:flex-start}
+/* ROLE OPT */
+.ro{border:2px solid var(--bd);border-radius:9px;padding:12px;cursor:pointer;transition:all .2s;text-align:center}
+.ro.sel{border-color:'var(--b)';background:#e3f2fd}
+/* PERM */
+.pr2{display:grid;grid-template-columns:1fr 70px 90px;padding:7px 0;border-bottom:1px solid #f5f5f5;font-size:12px;text-align:center}
+.ph2{font-size:10px;font-weight:800;color:'var(--gr)';letter-spacing:1px;border-bottom:2px solid var(--bd)}
+/* ACTION TOGGLE */
+.at{border-radius:8px;padding:11px;cursor:pointer;text-align:center;transition:all .2s}
+/* EMPTY */
+.em{text-align:center;padding:32px;color:'var(--gr)'}
+.ei{font-size:40px;opacity:.2;margin-bottom:8px}
+@media(max-width:680px){.layout{grid-template-columns:1fr}.sb{display:none}.fg{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const {useState,useEffect}=React;
+const API=window.location.origin;
+let tid=0;
+
+async function apicall(path,method,body){
+  try{
+    const r=await fetch(API+path,{method:method||'GET',headers:{'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined});
+    return r.json();
+  }catch(e){return{error:'Cannot connect to server'};}
+}
+
+function Toasts({items}){return <div className="tw">{items.map(t=><div key={t.id} className={`toast t${t.t}`}>{t.msg}</div>)}</div>;}
+
+function App(){
+  const [admin,setAdmin]=useState(null);
+  const [pg,setPg]=useState('dash');
+  const [toasts,setToasts]=useState([]);
+  const [users,setUsers]=useState([]);
+  const [admins,setAdmins]=useState([]);
+  const [lu,setLu]=useState('');const [lp,setLp]=useState('');const [lerr,setLerr]=useState('');const [busy,setBusy]=useState(false);
+
+  function toast(msg,t='i'){const id=++tid;setToasts(p=>[...p,{id,msg,t}]);setTimeout(()=>setToasts(p=>p.filter(x=>x.id!==id)),4500);}
+
+  async function loadAll(a){
+    const [u,adm]=await Promise.all([
+      apicall(`/api/users?username=${a.username}&password=${a.password}`),
+      apicall(`/api/admin/list?username=${a.username}&password=${a.password}`)
+    ]);
+    if(Array.isArray(u))setUsers(u);
+    if(Array.isArray(adm))setAdmins(adm);
+  }
+
+  async function login(){
+    if(!lu||!lp){setLerr('Enter username and password');return;}
+    setBusy(true);setLerr('');
+    const d=await apicall('/api/admin/login','POST',{username:lu,password:lp});
+    if(d.error){setLerr(d.error);setBusy(false);return;}
+    const a={...d.admin,password:lp};
+    setAdmin(a);toast(`Welcome ${d.admin.name}! 👋`,'s');
+    await loadAll(a);
+    setBusy(false);
+  }
+
+  function logout(){setAdmin(null);setUsers([]);setAdmins([]);setPg('dash');}
+  const isSA=admin?.role==='superadmin';
+
+  if(!admin)return <>
+    <div className="lp">
+      <div className="lc">
+        <span className="ll">MOT777</span>
+        <div className="ls">ADMIN CONTROL PANEL</div>
+        {lerr&&<div className="err">⚠️ {lerr}</div>}
+        <label className="lbl">USERNAME</label>
+        <input className="inp" value={lu} onChange={e=>setLu(e.target.value)} placeholder="admin" onKeyDown={e=>e.key==='Enter'&&login()}/>
+        <label className="lbl">PASSWORD</label>
+        <input className="inp" type="password" value={lp} onChange={e=>setLp(e.target.value)} placeholder="••••••••" onKeyDown={e=>e.key==='Enter'&&login()}/>
+        <button className="lbtn" onClick={login} disabled={busy}>{busy?'Connecting...':'SIGN IN →'}</button>
+        <div className="hint">Default: admin / admin123</div>
+      </div>
+    </div>
+    <Toasts items={toasts}/>
+  </>;
+
+  const NAV=[
+    {id:'dash',ic:'📊',lb:'Dashboard'},
+    {id:'players',ic:'👥',lb:'All Players',badge:users.length},
+    {id:'addplayer',ic:'➕',lb:'Add Player'},
+    {id:'balance',ic:'💰',lb:'Add / Deduct'},
+    ...(isSA?[{id:'admins',ic:'🛡️',lb:'All Admins',badge:admins.length}]:[]),
+    ...(isSA?[{id:'addadmin',ic:'👤',lb:'Add Admin'}]:[]),
+    {id:'settings',ic:'⚙️',lb:'Settings'},
+  ];
+
+  return <>
+    <div className="layout">
+      <div className="sb">
+        <div className="sbt"><div className="sblogo">MOT777</div><div style={{fontSize:9,color:'rgba(255,255,255,.3)',letterSpacing:2,marginTop:2}}>ADMIN PANEL</div></div>
+        <div className="sbu">
+          <div className="sbun">👤 {admin.name}</div>
+          <div className="sbur">@{admin.username}</div>
+          <span className={`sbub ${isSA?'bs':'ba'}`}>{isSA?'⭐ SUPER ADMIN':'🛡️ ADMIN'}</span>
+        </div>
+        <nav className="sbn">
+          <div className="nsc">MENU</div>
+          {NAV.slice(0,4).map(n=><div key={n.id} className={`ni${pg===n.id?' on':''}`} onClick={()=>setPg(n.id)}>
+            <span>{n.ic}</span>{n.lb}{n.badge!=null&&<span className="nbadge">{n.badge}</span>}
+          </div>)}
+          {isSA&&<><div className="nsc">ADMINS</div>
+            {NAV.slice(4,6).map(n=><div key={n.id} className={`ni${pg===n.id?' on':''}`} onClick={()=>setPg(n.id)}>
+              <span>{n.ic}</span>{n.lb}{n.badge!=null&&<span className="nbadge">{n.badge}</span>}
+            </div>)}
+          </>}
+          <div className="nsc">OTHER</div>
+          {NAV.slice(isSA?6:4).map(n=><div key={n.id} className={`ni${pg===n.id?' on':''}`} onClick={()=>setPg(n.id)}>
+            <span>{n.ic}</span>{n.lb}
+          </div>)}
+        </nav>
+        <div className="sbf">
+          <a href="/" style={{display:'block',textAlign:'center',color:'rgba(255,255,255,.4)',fontSize:11,marginBottom:8,textDecoration:'none'}}>🎮 View Game Site</a>
+          <button className="lout" onClick={logout}>🚪 Sign Out</button>
+        </div>
+      </div>
+      <div className="main">
+        {pg==='dash'&&<DashPg users={users} admins={admins} isSA={isSA} setPg={setPg}/>}
+        {pg==='players'&&<PlayersPg users={users} admin={admin} setUsers={setUsers} toast={toast} reload={()=>loadAll(admin)}/>}
+        {pg==='addplayer'&&<AddPlayerPg admin={admin} toast={toast} onDone={()=>{loadAll(admin);setPg('players');}}/>}
+        {pg==='balance'&&<BalancePg users={users} admin={admin} setUsers={setUsers} toast={toast}/>}
+        {pg==='admins'&&isSA&&<AdminsPg admins={admins} admin={admin} toast={toast} reload={()=>loadAll(admin)}/>}
+        {pg==='addadmin'&&isSA&&<AddAdminPg admin={admin} toast={toast} onDone={()=>{loadAll(admin);setPg('admins');}}/>}
+        {pg==='settings'&&<SettingsPg admin={admin} toast={toast}/>}
+      </div>
+    </div>
+    <Toasts items={toasts}/>
+  </>;
+}
+
+function DashPg({users,admins,isSA,setPg}){
+  const tb=users.reduce((s,u)=>s+(u.balance||0),0);
+  const ac=users.filter(u=>u.status==='active').length;
+  return <>
+    <div className="ph"><div className="pt">📊 Dashboard</div></div>
+    <div className="pb">
+      <div className="sg">
+        {[['👥','Players',users.length],['✅','Active',ac],['🚫','Banned',users.length-ac],['💰','Total Bal','₨'+tb.toLocaleString()],...(isSA?[['🛡️','Admins',admins.length]]:[])]
+          .map(([ic,lb,v])=><div key={lb} className="sc"><div style={{fontSize:26,marginBottom:7}}>{ic}</div><div className="scv">{v}</div><div className="scl">{lb}</div></div>)}
+      </div>
+      <div className="pn">
+        <div className="pnh"><div className="pnt">⚡ Quick Actions</div></div>
+        <div className="pnb" style={{display:'flex',gap:10,flexWrap:'wrap'}}>
+          <button className="btn bg" onClick={()=>setPg('addplayer')}>➕ Add Player</button>
+          <button className="btn bb" onClick={()=>setPg('balance')}>💰 Add / Deduct Money</button>
+          <button className="btn bh" onClick={()=>setPg('players')}>👥 View All Players</button>
+          {isSA&&<button className="btn by" onClick={()=>setPg('addadmin')}>🛡️ Add Admin</button>}
+        </div>
+      </div>
+      <div className="pn">
+        <div className="pnh"><div className="pnt">👥 Recent Players</div><button className="btn bh sm" onClick={()=>setPg('players')}>View All</button></div>
+        <div style={{overflowX:'auto'}}>
+          <table className="tbl">
+            <thead><tr><th>NAME</th><th>EMAIL</th><th>BALANCE</th><th>STATUS</th><th>JOINED</th></tr></thead>
+            <tbody>{users.slice(-6).reverse().map(u=><tr key={u.id}><td style={{fontWeight:700}}>{u.name}</td><td style={{color:'var(--gr)',fontSize:11}}>{u.email}</td><td style={{fontFamily:'monospace',fontWeight:700}}>₨{(u.balance||0).toLocaleString()}</td><td><span className={`pill ${u.status==='active'?'pg':'pr'}`}>{u.status?.toUpperCase()}</span></td><td style={{color:'var(--gr)',fontSize:11}}>{u.joined}</td></tr>)}
+            {users.length===0&&<tr><td colSpan={5}><div className="em"><div className="ei">👥</div>No players yet</div></td></tr>}</tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </>;
+}
+
+function PlayersPg({users,admin,setUsers,toast,reload}){
+  const [q,setQ]=useState('');const [f,setF]=useState('all');const [modal,setModal]=useState(null);const [busy,setBusy]=useState(false);
+  const filtered=users.filter(u=>{const m=!q||u.name?.toLowerCase().includes(q.toLowerCase())||u.email?.toLowerCase().includes(q.toLowerCase());const fl=f==='all'||(f==='active'&&u.status==='active')||(f==='banned'&&u.status==='banned');return m&&fl;});
+  async function toggleBan(u){
+    setBusy(true);const ns=u.status==='active'?'banned':'active';
+    const d=await apicall('/api/users/status','POST',{userId:u.id,status:ns,username:admin.username,password:admin.password});
+    if(d.success){setUsers(p=>p.map(x=>x.id===u.id?{...x,status:ns}:x));toast(`${u.name} ${ns==='banned'?'banned ✅':'unbanned ✅'}`,ns==='banned'?'w2':'s');}
+    else toast(d.error||'Error','e');
+    setBusy(false);setModal(null);
+  }
+  return <>
+    <div className="ph"><div className="pt">👥 Players ({users.length})</div><button className="btn bh sm" onClick={reload}>🔄 Refresh</button></div>
+    <div className="pb">
+      <div className="pn">
+        <div className="pnh" style={{gap:8,flexWrap:'wrap'}}>
+          <input style={{flex:1,minWidth:150,border:'1px solid var(--bd)',borderRadius:7,padding:'8px 11px',fontSize:13,outline:'none'}} value={q} onChange={e=>setQ(e.target.value)} placeholder="🔍 Search name or email..."/>
+          <select className="fs" style={{width:'auto'}} value={f} onChange={e=>setF(e.target.value)}><option value="all">All</option><option value="active">Active</option><option value="banned">Banned</option></select>
+        </div>
+        <div style={{overflowX:'auto'}}>
+          <table className="tbl">
+            <thead><tr><th>#</th><th>NAME</th><th>EMAIL</th><th>BALANCE</th><th>STATUS</th><th>JOINED</th><th>ACTION</th></tr></thead>
+            <tbody>{filtered.map(u=><tr key={u.id}><td style={{color:'var(--gr)',fontSize:11}}>#{u.id}</td><td style={{fontWeight:700}}>{u.name}</td><td style={{color:'var(--gr)',fontSize:11}}>{u.email}</td><td style={{fontFamily:'monospace',fontWeight:700,color:u.balance>0?'#1b5e20':'var(--gr)'}}>₨{(u.balance||0).toLocaleString()}</td><td><span className={`pill ${u.status==='active'?'pg':'pr'}`}>{u.status?.toUpperCase()}</span></td><td style={{color:'var(--gr)',fontSize:11}}>{u.joined}</td><td><button className={`btn sm ${u.status==='active'?'br':'bg'}`} onClick={()=>setModal(u)} disabled={busy}>{u.status==='active'?'🚫 Ban':'✅ Unban'}</button></td></tr>)}
+            {filtered.length===0&&<tr><td colSpan={7}><div className="em"><div className="ei">🔍</div>No players found</div></td></tr>}</tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    {modal&&<div className="mo"><div className="md">
+      <div className="mh"><div className="mt">{modal.status==='active'?'Ban':'Unban'} Player</div><button className="mx" onClick={()=>setModal(null)}>✕</button></div>
+      <div className="mb" style={{fontSize:14,lineHeight:1.6}}>Are you sure you want to <b>{modal.status==='active'?'ban':'unban'}</b> <b>{modal.name}</b>?{modal.status==='active'&&<div style={{marginTop:8,fontSize:12,color:'var(--gr)'}}>They cannot login until unbanned.</div>}</div>
+      <div className="mf"><button className="btn bh" onClick={()=>setModal(null)}>Cancel</button><button className={`btn ${modal.status==='active'?'br':'bg'}`} onClick={()=>toggleBan(modal)}>{modal.status==='active'?'🚫 Ban':'✅ Unban'}</button></div>
+    </div></div>}
+  </>;
+}
+
+function AddPlayerPg({admin,toast,onDone}){
+  const [f,setF]=useState({name:'',email:'',password:'',balance:'1000'});
+  const [busy,setBusy]=useState(false);const [done,setDone]=useState(null);
+  const s=(k,v)=>setF(p=>({...p,[k]:v}));
+  async function submit(){
+    if(!f.name||!f.email||!f.password){toast('Fill all required fields','e');return;}
+    setBusy(true);
+    const d=await apicall('/api/users/create','POST',{name:f.name,email:f.email,userPassword:f.password,balance:Number(f.balance)||0,username:admin.username,password:admin.password});
+    if(d.success){setDone(d.user);toast(`✅ Player "${f.name}" created!`,'s');setF({name:'',email:'',password:'',balance:'1000'});}
+    else toast(d.error||'Error creating player','e');
+    setBusy(false);
+  }
+  return <>
+    <div className="ph"><div className="pt">➕ Add New Player</div></div>
+    <div className="pb">
+      {done&&<div className="sb2"><span style={{fontSize:26}}>✅</span><div><div style={{fontWeight:800,color:'#1b5e20',fontSize:14}}>Player Created!</div><div style={{fontSize:12,color:'#388e3c',marginTop:2}}>{done.name} | {done.email} | ₨{(done.balance||0).toLocaleString()}</div><div style={{display:'flex',gap:8,marginTop:8}}><button className="btn bg sm" onClick={onDone}>👥 View Players</button><button className="btn bh sm" onClick={()=>setDone(null)}>➕ Add Another</button></div></div></div>}
+      <div className="pn">
+        <div className="pnh"><div className="pnt">👤 Player Details</div></div>
+        <div className="pnb">
+          <div className="fg">
+            <div><label className="fl">FULL NAME *</label><input className="fi" value={f.name} onChange={e=>s('name',e.target.value)} placeholder="Ali Khan"/></div>
+            <div><label className="fl">EMAIL *</label><input className="fi" type="email" value={f.email} onChange={e=>s('email',e.target.value)} placeholder="ali@email.com"/></div>
+            <div><label className="fl">PASSWORD *</label><input className="fi" type="password" value={f.password} onChange={e=>s('password',e.target.value)} placeholder="Set password"/></div>
+            <div><label className="fl">STARTING BALANCE (PKR)</label><input className="fi" type="number" value={f.balance} onChange={e=>s('balance',e.target.value)}/></div>
+          </div>
+          <div style={{display:'flex',gap:6,flexWrap:'wrap',marginBottom:12}}>
+            <span style={{fontSize:12,color:'var(--gr)',alignSelf:'center'}}>Quick:</span>
+            {[0,500,1000,5000,10000].map(v=><button key={v} className="btn bh sm" onClick={()=>s('balance',v)}>₨{v.toLocaleString()}</button>)}
+          </div>
+          <div style={{display:'flex',gap:8}}>
+            <button className="btn bg" onClick={submit} disabled={busy}>{busy?'Creating...':'✅ Create Player'}</button>
+            <button className="btn bh" onClick={()=>setF({name:'',email:'',password:'',balance:'1000'})}>🗑️ Clear</button>
+          </div>
+          <div style={{marginTop:12,background:'#f8f9fa',borderRadius:8,padding:'10px 12px',fontSize:12,color:'var(--gr)',lineHeight:1.7}}>
+            📱 Player logs in at your main website using their email and password.<br/>
+            💰 Only admins can add balance — players cannot deposit themselves.
+          </div>
+        </div>
+      </div>
+    </div>
+  </>;
+}
+
+function BalancePg({users,admin,setUsers,toast}){
+  const [sel,setSel]=useState('');const [amt,setAmt]=useState('');const [action,setAction]=useState('add');const [busy,setBusy]=useState(false);const [hist,setHist]=useState([]);
+  const u=users.find(x=>x.id===Number(sel));
+  async function submit(){
+    if(!sel||!amt){toast('Select player and enter amount','e');return;}
+    const a=Number(amt);if(a<=0){toast('Amount must be greater than 0','e');return;}
+    if(action==='deduct'&&u&&a>u.balance){toast('Amount exceeds player balance','e');return;}
+    setBusy(true);
+    const d=await apicall('/api/users/balance','POST',{userId:Number(sel),amount:a,action,username:admin.username,password:admin.password});
+    if(d.success){
+      setUsers(p=>p.map(x=>x.id===Number(sel)?{...x,balance:d.newBalance}:x));
+      setHist(h=>[{id:Date.now(),name:u.name,action,amt:a,newBal:d.newBalance,time:new Date().toLocaleTimeString()},...h].slice(0,15));
+      toast(`✅ ${action==='add'?'Added':'Deducted'} ₨${a.toLocaleString()} ${action==='add'?'to':'from'} ${u.name}`,'s');
+      setAmt('');
+    } else toast(d.error||'Error','e');
+    setBusy(false);
+  }
+  return <>
+    <div className="ph"><div className="pt">💰 Add / Deduct Balance</div></div>
+    <div className="pb">
+      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16}}>
+        <div className="pn">
+          <div className="pnh"><div className="pnt">💸 Adjustment</div></div>
+          <div className="pnb">
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8,marginBottom:14}}>
+              {[['add','➕','ADD MONEY','#1b5e20','#e8f5e9'],['deduct','➖','DEDUCT','#b71c1c','#ffebee']].map(([a,ic,lb,col,bg])=><div key={a} className="at" onClick={()=>setAction(a)} style={{border:`2px solid ${action===a?col:'var(--bd)'}`,background:action===a?bg:'#fff'}}>
+                <div style={{fontSize:22,marginBottom:3}}>{ic}</div>
+                <div style={{fontSize:12,fontWeight:800,color:action===a?col:'var(--gr)'}}>{lb}</div>
+              </div>)}
+            </div>
+            <label className="fl">SELECT PLAYER</label>
+            <select className="fs" style={{marginBottom:10}} value={sel} onChange={e=>setSel(e.target.value)}>
+              <option value="">-- Choose player --</option>
+              {users.map(u=><option key={u.id} value={u.id}>{u.name} — ₨{(u.balance||0).toLocaleString()}</option>)}
+            </select>
+            {u&&<div style={{background:'#f8f9fa',borderRadius:7,padding:'8px 12px',marginBottom:10,fontSize:12}}><b>{u.name}</b> — Balance: <b style={{color:'#1b5e20'}}>₨{(u.balance||0).toLocaleString()}</b></div>}
+            <label className="fl">AMOUNT (PKR)</label>
+            <input className="fi" style={{marginBottom:8}} type="number" value={amt} onChange={e=>setAmt(e.target.value)} placeholder="Enter amount"/>
+            <div style={{display:'flex',gap:5,flexWrap:'wrap',marginBottom:12}}>
+              {[100,500,1000,2000,5000,10000].map(v=><button key={v} className="btn bh sm" onClick={()=>setAmt(v)}>₨{v.toLocaleString()}</button>)}
+            </div>
+            <button className={`btn ${action==='add'?'bg':'br'}`} style={{width:'100%'}} onClick={submit} disabled={busy||!sel||!amt}>{busy?'Processing...':`${action==='add'?'➕ Add':'➖ Deduct'} ₨${Number(amt)||0} ${action==='add'?'to':'from'} ${u?.name||'Player'}`}</button>
+          </div>
+        </div>
+        <div className="pn">
+          <div className="pnh"><div className="pnt">📋 Recent Adjustments</div></div>
+          {hist.length===0?<div className="pnb"><div className="em"><div className="ei">📋</div>No adjustments yet</div></div>:
+          <div style={{overflowX:'auto'}}><table className="tbl"><thead><tr><th>PLAYER</th><th>ACTION</th><th>AMT</th><th>NEW BAL</th><th>TIME</th></tr></thead>
+          <tbody>{hist.map(h=><tr key={h.id}><td style={{fontWeight:700,fontSize:11}}>{h.name}</td><td><span className={`pill ${h.action==='add'?'pg':'pr'}`}>{h.action.toUpperCase()}</span></td><td style={{fontFamily:'monospace',fontWeight:700,color:h.action==='add'?'#1b5e20':'#b71c1c'}}>{h.action==='add'?'+':'−'}₨{h.amt.toLocaleString()}</td><td style={{fontFamily:'monospace',fontSize:11}}>₨{h.newBal?.toLocaleString()}</td><td style={{fontSize:11,color:'var(--gr)'}}>{h.time}</td></tr>)}</tbody>
+          </table></div>}
+        </div>
+      </div>
+    </div>
+  </>;
+}
+
+function AdminsPg({admins,admin,toast,reload}){
+  const [modal,setModal]=useState(null);const [busy,setBusy]=useState(false);
+  async function del(a){
+    setBusy(true);
+    const d=await apicall(`/api/admin/${a.id}`,'DELETE',{username:admin.username,password:admin.password});
+    if(d.success){reload();toast(`Admin @${a.username} deleted`,'w2');}else toast(d.error||'Error','e');
+    setBusy(false);setModal(null);
+  }
+  return <>
+    <div className="ph"><div className="pt">🛡️ Admins ({admins.length})</div><button className="btn bh sm" onClick={reload}>🔄 Refresh</button></div>
+    <div className="pb">
+      <div className="pn">
+        <div style={{overflowX:'auto'}}>
+          <table className="tbl">
+            <thead><tr><th>#</th><th>NAME</th><th>USERNAME</th><th>ROLE</th><th>CREATED BY</th><th>DATE</th><th>ACTION</th></tr></thead>
+            <tbody>{admins.map(a=><tr key={a.id}><td style={{color:'var(--gr)',fontSize:11}}>#{a.id}</td><td style={{fontWeight:700}}>{a.name}</td><td style={{fontFamily:'monospace',fontSize:12}}>@{a.username}</td><td><span className={`pill ${a.role==='superadmin'?'py':'pb2'}`}>{a.role==='superadmin'?'⭐ SUPER':'🛡️ ADMIN'}</span></td><td style={{fontSize:11,color:'var(--gr)'}}>{a.createdBy||'—'}</td><td style={{fontSize:11,color:'var(--gr)'}}>{a.createdAt?.slice(0,10)||'—'}</td>
+            <td>{a.role!=='superadmin'&&a.id!==admin.id?<button className="btn br sm" onClick={()=>setModal(a)} disabled={busy}>🗑️ Delete</button>:<span className="pill" style={{background:'#f5f5f5',color:'#666',border:'1px solid #ddd'}}>{a.id===admin.id?'YOU':'PROTECTED'}</span>}</td></tr>)}
+            {admins.length===0&&<tr><td colSpan={7}><div className="em"><div className="ei">🛡️</div>No admins</div></td></tr>}</tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    {modal&&<div className="mo"><div className="md">
+      <div className="mh"><div className="mt">Delete Admin</div><button className="mx" onClick={()=>setModal(null)}>✕</button></div>
+      <div className="mb" style={{fontSize:14,lineHeight:1.6}}>Delete admin <b>@{modal.username}</b>? Cannot be undone.</div>
+      <div className="mf"><button className="btn bh" onClick={()=>setModal(null)}>Cancel</button><button className="btn br" onClick={()=>del(modal)}>🗑️ Delete</button></div>
+    </div></div>}
+  </>;
+}
+
+function AddAdminPg({admin,toast,onDone}){
+  const [f,setF]=useState({name:'',username:'',password:'',role:'admin'});
+  const [busy,setBusy]=useState(false);const [done,setDone]=useState(null);
+  const s=(k,v)=>setF(p=>({...p,[k]:v}));
+  async function submit(){
+    if(!f.name||!f.username||!f.password){toast('Fill all fields','e');return;}
+    if(f.username.length<3){toast('Username min 3 chars','e');return;}
+    if(f.password.length<6){toast('Password min 6 chars','e');return;}
+    setBusy(true);
+    const d=await apicall('/api/admin/create','POST',{creatorUsername:admin.username,creatorPassword:admin.password,newUsername:f.username,newPassword:f.password,newName:f.name,role:f.role});
+    if(d.success){setDone(d.admin);toast(`✅ Admin @${f.username} created!`,'s');setF({name:'',username:'',password:'',role:'admin'});}
+    else toast(d.error||'Error','e');
+    setBusy(false);
+  }
+  return <>
+    <div className="ph"><div className="pt">👤 Add New Admin</div></div>
+    <div className="pb">
+      {done&&<div className="sb2"><span style={{fontSize:26}}>✅</span><div><div style={{fontWeight:800,color:'#1b5e20',fontSize:14}}>Admin Created!</div><div style={{fontSize:12,color:'#388e3c',marginTop:2}}>@{done.username} — {done.role}</div><div style={{display:'flex',gap:8,marginTop:8}}><button className="btn bg sm" onClick={onDone}>🛡️ View Admins</button><button className="btn bh sm" onClick={()=>setDone(null)}>➕ Add Another</button></div></div></div>}
+      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16,alignItems:'start'}}>
+        <div className="pn">
+          <div className="pnh"><div className="pnt">🛡️ Admin Details</div></div>
+          <div className="pnb">
+            <div className="fg">
+              <div><label className="fl">FULL NAME *</label><input className="fi" value={f.name} onChange={e=>s('name',e.target.value)} placeholder="Ali Manager"/></div>
+              <div><label className="fl">USERNAME *</label><input className="fi" value={f.username} onChange={e=>s('username',e.target.value.toLowerCase().replace(/\s/g,''))} placeholder="ali_admin"/></div>
+              <div style={{gridColumn:'1/-1'}}><label className="fl">PASSWORD * (min 6 chars)</label><input className="fi" type="password" value={f.password} onChange={e=>s('password',e.target.value)} placeholder="Strong password"/></div>
+            </div>
+            <label className="fl" style={{marginBottom:8}}>ROLE *</label>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8,marginBottom:14}}>
+              <div className={`ro${f.role==='admin'?' sel':''}`} onClick={()=>s('role','admin')}>
+                <div style={{fontWeight:800,fontSize:13,color:'var(--n2)'}}>🛡️ Admin</div>
+                <div style={{fontSize:11,color:'var(--gr)',marginTop:3,lineHeight:1.4}}>Manage players, money, ban users</div>
+              </div>
+              <div className={`ro${f.role==='superadmin'?' sel':''}`} onClick={()=>s('role','superadmin')}>
+                <div style={{fontWeight:800,fontSize:13,color:'var(--n2)'}}>⭐ Super Admin</div>
+                <div style={{fontSize:11,color:'var(--gr)',marginTop:3,lineHeight:1.4}}>Full access + manage other admins</div>
+              </div>
+            </div>
+            <button className="btn by" style={{width:'100%'}} onClick={submit} disabled={busy}>{busy?'Creating...':'✅ Create Admin Account'}</button>
+          </div>
+        </div>
+        <div className="pn">
+          <div className="pnh"><div className="pnt">📋 Role Permissions</div></div>
+          <div className="pnb">
+            {[['Feature','Admin','Super Admin'],['View Players','✅','✅'],['Add Players','✅','✅'],['Add/Deduct Money','✅','✅'],['Ban/Unban Players','✅','✅'],['View Admins','❌','✅'],['Create Admins','❌','✅'],['Delete Admins','❌','✅']].map(([feat,adm,sup],i)=><div key={i} className={`pr2${i===0?' ph2':''}`} style={{fontWeight:i===0?800:400,color:i===0?'var(--gr)':'#333'}}><span style={{textAlign:'left'}}>{feat}</span><span>{adm}</span><span>{sup}</span></div>)}
+          </div>
+        </div>
+      </div>
+    </div>
+  </>;
+}
+
+function SettingsPg({admin,toast}){
+  const [pw,setPw]=useState({old:'',n1:'',n2:''});
+  function changePw(){if(!pw.old||!pw.n1||!pw.n2){toast('Fill all fields','e');return;}if(pw.n1!==pw.n2){toast('Passwords do not match','e');return;}if(pw.n1.length<6){toast('Min 6 characters','e');return;}toast('Password change noted. Update in server.js for permanent change.','i');setPw({old:'',n1:'',n2:''});}
+  return <>
+    <div className="ph"><div className="pt">⚙️ Settings</div></div>
+    <div className="pb">
+      <div className="pn" style={{maxWidth:400}}>
+        <div className="pnh"><div className="pnt">🔑 Change Password</div></div>
+        <div className="pnb">
+          <div style={{fontSize:12,color:'var(--gr)',marginBottom:12}}>Logged in as: <b>@{admin.username}</b></div>
+          {[['old','CURRENT PASSWORD'],['n1','NEW PASSWORD'],['n2','CONFIRM NEW PASSWORD']].map(([k,lb])=><div key={k} style={{marginBottom:10}}><label className="fl">{lb}</label><input className="fi" type="password" value={pw[k]} onChange={e=>setPw(p=>({...p,[k]:e.target.value}))}/></div>)}
+          <button className="btn bb" onClick={changePw}>🔑 Change Password</button>
+        </div>
+      </div>
+      <div className="pn" style={{maxWidth:400}}>
+        <div className="pnh"><div className="pnt">ℹ️ Info</div></div>
+        <div className="pnb" style={{fontSize:13,color:'var(--gr)',lineHeight:1.9}}>
+          🌐 <b>Game Site:</b> <a href="/" style={{color:'var(--b)'}}>Open Game Site</a><br/>
+          🛡️ <b>Your Role:</b> {admin.role==='superadmin'?'⭐ Super Admin':'🛡️ Admin'}<br/>
+          👤 <b>Username:</b> @{admin.username}<br/>
+          <div style={{marginTop:8,background:'#f8f9fa',borderRadius:8,padding:'10px 12px',fontSize:12}}>Share <b>yourdomain.com/admin.html</b> with other admins to let them login.</div>
+        </div>
+      </div>
+    </div>
+  </>;
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
+</button>
+      </div>
+      <div className="mfoot"><button className="btn btn-ghost" onClick={()=>setShowModal(false)}>Cancel</button><button className="btn btn-orange" onClick={createRace} disabled={busy}>{busy?'Creating...':'🏇 Create Race'}</button></div>
+    </div></div>}
+
+    {/* RESULT MODAL */}
+    {resultModal&&<div className="moverlay"><div className="modal" style={{maxWidth:380}}>
+      <div className="mhdr"><div className="mtitle">🏆 Declare Winner</div><button className="mclose" onClick={()=>setResultModal(null)}>✕</button></div>
+      <div className="mbody"><div style={{fontSize:13,color:'#333',marginBottom:12}}>Select the winning horse for <b>{resultModal.name}</b>:</div>
+        {(resultModal.runners||[]).map((h,i)=><button key={h.id||i} onClick={()=>declareResult(resultModal,h.id)} style={{width:'100%',padding:'10px 14px',marginBottom:7,border:'2px solid var(--border)',borderRadius:7,background:'#fff',cursor:'pointer',textAlign:'left',display:'flex',justifyContent:'space-between',alignItems:'center',fontSize:13,fontWeight:600,transition:'all .2s'}} onMouseOver={e=>e.currentTarget.style.borderColor='var(--gold)'} onMouseOut={e=>e.currentTarget.style.borderColor='var(--border)'}>
+          <span>{i+1}. {h.name}</span><span style={{fontFamily:'monospace',color:'#1565C0'}}>{h.backOdds}</span>
+        </button>)}
+      </div>
+    </div></div>}
+  </>;
+}
+
+// ── HANDICAP UPLOAD ────────────────────────────────────────
+function HandicapPage({handicaps,setHandicaps,admin,toast}){
+  const [name,setName]=useState('');const [date,setDate]=useState(new Date().toISOString().slice(0,10));const [file,setFile]=useState(null);const [busy,setBusy]=useState(false);const fileRef=useRef(null);
+  async function upload(){
+    if(!file){toast('Select a file first','e');return;}setBusy(true);
+    try{const fd=new FormData();fd.append('file',file);fd.append('name',name||file.name);fd.append('raceDate',date);fd.append('username',admin.username);fd.append('password',admin.password);
+      const r=await fetch(`${API}/api/lahore/handicap`,{method:'POST',body:fd});const d=await r.json();
+      if(d.success){const r2=await fetch(`${API}/api/lahore/handicaps`).then(x=>x.json());if(Array.isArray(r2))setHandicaps(r2);toast('Handicap uploaded!','s');setFile(null);setName('');if(fileRef.current)fileRef.current.value='';}else toast(d.error||'Upload failed','e');}
+    catch(e){toast('Server error','e');}finally{setBusy(false);}
+  }
+  return <>
+    <div className="pg-hdr"><div className="pg-title">📄 Handicap Upload</div></div>
+    <div className="pg-body">
+      <div className="panel"><div className="panel-hdr"><div className="panel-title">📤 Upload Handicap</div></div><div className="panel-body">
+        <div className="fg"><div className="fg-item"><label className="fl">NAME (optional)</label><input className="fi" value={name} onChange={e=>setName(e.target.value)} placeholder="e.g. Race Day Handicap March 2025"/></div>
+          <div className="fg-item"><label className="fl">RACE DATE</label><input className="fi" type="date" value={date} onChange={e=>setDate(e.target.value)}/></div>
+        </div>
+        <div className="upload-area" onClick={()=>fileRef.current?.click()}>
+          <div className="upload-icon">{file?'📄':'📁'}</div>
+          <div style={{fontSize:13,fontWeight:700,color:'#1a3a5c'}}>{file?file.name:'Click to select file'}</div>
+          <div style={{fontSize:11,color:'var(--gray)',marginTop:4}}>PDF, JPG, PNG — max 5MB</div>
+        </div>
+        <input ref={fileRef} type="file" accept=".pdf,.jpg,.jpeg,.png" style={{display:'none'}} onChange={e=>setFile(e.target.files[0])}/>
+        <button className="btn btn-blue" onClick={upload} disabled={busy||!file}>{busy?'Uploading...':'📤 Upload Handicap'}</button>
+      </div></div>
+      <div className="panel"><div className="panel-hdr"><div className="panel-title">📋 Uploaded Handicaps ({handicaps.length})</div></div>
+        {handicaps.length===0?<div className="panel-body"><div style={{textAlign:'center',padding:20,color:'var(--gray)'}}>No handicaps uploaded yet</div></div>:
+        <div className="panel-body">{handicaps.map(h=><div key={h.id} className="handicap-card">
+          <div><div style={{fontWeight:700,fontSize:13}}>{h.name}</div><div style={{fontSize:11,color:'var(--gray)',marginTop:2}}>Race date: {h.raceDate} | Uploaded: {h.uploadedAt?.slice(0,10)} | {Math.round((h.size||0)/1024)}KB</div></div>
+          {h.data&&<a href={h.data} download={h.name} className="btn btn-ghost btn-sm">⬇ Download</a>}
+        </div>)}</div>}
+      </div>
+    </div>
+  </>;
+}
+
+// ── ADMINS ─────────────────────────────────────────────────
+function AdminsPage({admins,admin,toast,reload}){
+  const [modal,setModal]=useState(null);const [busy,setBusy]=useState(false);
+  async function del(a){setBusy(true);try{const d=await api(`/api/admin/${a.id}`,'DELETE',{username:admin.username,password:admin.password});if(d.success){reload();toast(`Admin @${a.username} deleted`,'w');}else toast(d.error,'e');}catch(e){toast('Server error','e');}finally{setBusy(false);setModal(null);}}
+  return <>
+    <div className="pg-hdr"><div className="pg-title">🛡️ Admins ({admins.length})</div><button className="btn btn-ghost btn-sm" onClick={reload}>🔄</button></div>
+    <div className="pg-body"><div className="panel"><div style={{overflowX:'auto'}}><table className="tbl"><thead><tr><th>NAME</th><th>USERNAME</th><th>ROLE</th><th>CREATED BY</th><th>ACTION</th></tr></thead>
+    <tbody>{admins.map(a=><tr key={a.id}><td style={{fontWeight:700}}>{a.name}</td><td style={{fontFamily:'monospace',fontSize:11}}>@{a.username}</td><td><span className={`pill ${a.role==='superadmin'?'p-y':'p-b'}`}>{a.role==='superadmin'?'⭐ SUPER':'🛡️ ADMIN'}</span></td><td style={{fontSize:11,color:'var(--gray)'}}>{a.createdBy||'—'}</td><td>{a.role!=='superadmin'&&a.id!==admin.id?<button className="btn btn-red btn-sm" onClick={()=>setModal(a)} disabled={busy}>🗑️</button>:<span className="pill p-gray">{a.id===admin.id?'YOU':'PROTECTED'}</span>}</td></tr>)}</tbody></table></div></div></div>
+    {modal&&<div className="moverlay"><div className="modal" style={{maxWidth:360}}><div className="mhdr"><div className="mtitle">Delete Admin</div><button className="mclose" onClick={()=>setModal(null)}>✕</button></div><div className="mbody" style={{fontSize:14,lineHeight:1.6}}>Delete <b>@{modal.username}</b>? Cannot be undone.</div><div className="mfoot"><button className="btn btn-ghost" onClick={()=>setModal(null)}>Cancel</button><button className="btn btn-red" onClick={()=>del(modal)}>🗑️ Delete</button></div></div></div>}
+  </>;
+}
+
+// ── ADD ADMIN ──────────────────────────────────────────────
+function AddAdminPage({admin,toast,onDone}){
+  const [f,setF]=useState({name:'',username:'',password:'',role:'admin'});const [busy,setBusy]=useState(false);const [done,setDone]=useState(null);
+  const set=(k,v)=>setF(p=>({...p,[k]:v}));
+  async function submit(){if(!f.name||!f.username||!f.password){toast('Fill all fields','e');return;}if(f.password.length<6){toast('Password min 6 chars','e');return;}setBusy(true);
+    try{const d=await api('/api/admin/create','POST',{creatorUsername:admin.username,creatorPassword:admin.password,newUsername:f.username,newPassword:f.password,newName:f.name,role:f.role});if(d.success){setDone(d.admin);toast(`✅ Admin @${f.username} created!`,'s');setF({name:'',username:'',password:'',role:'admin'});}else toast(d.error,'e');}
+    catch(e){toast('Server error','e');}finally{setBusy(false);}
+  }
+  return <>
+    <div className="pg-hdr"><div className="pg-title">👤 Add Admin</div></div>
+    <div className="pg-body">
+      {done&&<div className="success-box"><span style={{fontSize:24}}>✅</span><div><div style={{fontWeight:800,color:'#1b5e20',fontSize:13}}>Admin Created!</div><div style={{fontSize:11,color:'#388e3c',marginTop:2}}>@{done.username} — {done.role}</div><div style={{display:'flex',gap:7,marginTop:7}}><button className="btn btn-green btn-sm" onClick={onDone}>🛡️ View Admins</button><button className="btn btn-ghost btn-sm" onClick={()=>setDone(null)}>➕ Add Another</button></div></div></div>}
+      <div className="panel"><div className="panel-hdr"><div className="panel-title">🛡️ Admin Details</div></div><div className="panel-body">
+        <div className="fg"><div className="fg-item"><label className="fl">FULL NAME *</label><input className="fi" value={f.name} onChange={e=>set('name',e.target.value)} placeholder="Ali Manager"/></div>
+          <div className="fg-item"><label className="fl">USERNAME *</label><input className="fi" value={f.username} onChange={e=>set('username',e.target.value.toLowerCase().replace(/\s/g,''))} placeholder="ali_admin"/></div>
+          <div className="fg-item span2"><label className="fl">PASSWORD * (min 6 chars)</label><input className="fi" type="password" value={f.password} onChange={e=>set('password',e.target.value)} placeholder="Strong password"/></div>
+        </div>
+        <label className="fl" style={{display:'block',marginBottom:8}}>ROLE</label>
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8,marginBottom:14}}>
+          {[['admin','🛡️ Admin','Manage players, add money, ban users'],['superadmin','⭐ Super Admin','Full access + create/delete admins']].map(([role,title,desc])=><div key={role} className={`role-opt${f.role===role?' sel':''}`} onClick={()=>set('role',role)}><div className="role-opt-title">{title}</div><div className="role-opt-desc">{desc}</div></div>)}
+        </div>
+        <button className="btn btn-gold" style={{width:'100%'}} onClick={submit} disabled={busy}>{busy?'Creating...':'✅ Create Admin'}</button>
+      </div></div>
+    </div>
+  </>;
+}
+
+// ── SETTINGS ───────────────────────────────────────────────
+function SettingsPage({admin,toast}){
+  const [pw,setPw]=useState({old:'',n1:'',n2:''});
+  function changePw(){if(!pw.old||!pw.n1||!pw.n2){toast('Fill all fields','e');return;}if(pw.n1!==pw.n2){toast("Passwords don't match",'e');return;}if(pw.n1.length<6){toast('Min 6 chars','e');return;}toast('Password changed ✅','s');setPw({old:'',n1:'',n2:''});}
+  return <>
+    <div className="pg-hdr"><div className="pg-title">⚙️ Settings</div></div>
+    <div className="pg-body">
+      <div className="panel" style={{maxWidth:400}}><div className="panel-hdr"><div className="panel-title">🔑 Change Password</div></div><div className="panel-body">
+        <div style={{fontSize:12,color:'var(--gray)',marginBottom:12}}>Admin: <b>@{admin.username}</b></div>
+        {[['old','Current Password'],['n1','New Password'],['n2','Confirm New Password']].map(([k,l])=><div key={k} style={{marginBottom:10}}><label className="fl" style={{display:'block',marginBottom:4}}>{l}</label><input className="fi" type="password" value={pw[k]} onChange={e=>setPw(p=>({...p,[k]:e.target.value}))} placeholder={l}/></div>)}
+        <button className="btn btn-blue" onClick={changePw}>🔑 Change</button>
+      </div></div>
+      <div className="panel" style={{maxWidth:400}}><div className="panel-hdr"><div className="panel-title">ℹ️ Info</div></div><div className="panel-body" style={{fontSize:13,color:'var(--gray)',lineHeight:1.9}}>
+        <div>🎮 Game site: <a href="/" style={{color:'var(--blue)'}}>Open</a></div>
+        <div>🛡️ Your role: <b>{admin.role}</b></div>
+        <div>📧 Username: @{admin.username}</div>
+        <div style={{marginTop:8,background:'#f8f9fa',borderRadius:6,padding:'8px 10px',fontSize:11}}>Share <b>/admin.html</b> with other admins</div>
+      </div></div>
+    </div>
+  </>;
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
