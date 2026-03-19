@@ -1,0 +1,17 @@
+{
+  "name": "mot777",
+  "version": "3.0.0",
+  "description": "MOT777 Live Card Game Exchange",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "ws": "^8.16.0",
+    "multer": "^1.4.5-lts.1"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
